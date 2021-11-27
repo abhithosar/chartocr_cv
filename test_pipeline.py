@@ -47,6 +47,7 @@ def make_dirs(directories):
     for directory in directories:
         if not os.path.exists(directory):
             os.makedirs(directory)
+
 def load_net(testiter, cfg_name, data_dir, cache_dir, result_dir, cuda_id=0):
     cfg_file = os.path.join(system_configs.config_dir, cfg_name + ".json")
     with open(cfg_file, "r") as f:
@@ -89,7 +90,7 @@ def load_net(testiter, cfg_name, data_dir, cache_dir, result_dir, cuda_id=0):
 def Pre_load_nets():
     methods = {}
     db_cls, nnet_cls = load_net(50000, "CornerNetCls", "data/clsdata(1031)", "data/clsdata(1031)/cache",
-                                "data/clsdata(1031)/result")
+                                "data/clsdata(1031)/result",cuda_id=0)
 
     from testfile.test_line_cls_pure_real import testing
     path = 'testfile.test_%s' % "CornerNetCls"
@@ -274,12 +275,12 @@ def test(image_path, debug=False, suffix=None, min_value_official=None, max_valu
 
 if __name__ == "__main__":
 
-    tar_path = 'data/clsdata(1031)/cls/images/test2019' #'C:/work/clsdata(1031)/cls/images/test2019'
+    tar_path = 'data/clsdata(1031)/cls/images/test2019' #'data/piedata(1031)/pie/images/test2019' #'C:/work/clsdata(1031)/cls/images/test2019'
     images = os.listdir(tar_path)
     from random import shuffle
     shuffle(images)
     print(len(images))
-    for image in tqdm(images):
+    for image in tqdm(images[:1000]):
         path = os.path.join(tar_path, image)
         test(path)
     sd = 0

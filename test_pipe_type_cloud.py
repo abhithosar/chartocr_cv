@@ -6,6 +6,7 @@ import pprint
 import argparse
 
 import matplotlib
+from torch.cuda import random
 matplotlib.use("Agg")
 import cv2
 from tqdm import tqdm
@@ -212,8 +213,14 @@ def test(image_path, data_type=0, debug=False, suffix=None, min_value_official=N
             results = methods['Pie'][2](image, methods['Pie'][0], methods['Pie'][1], debug=False)
             cens = results[0]
             keys = results[1]
-            pie_data = GroupPie(image, cens, keys)
-            return pie_data
+            pie_data = GroupPie(image_cls, cens, keys)
+            
+            if pie_data is not None:
+                
+                pie_data[0].show()
+                return pie_data[1]
+            else:
+                return pie_data
 
         if data_type== 1:
             print("Predicted as LineChart")
@@ -222,7 +229,7 @@ def test(image_path, data_type=0, debug=False, suffix=None, min_value_official=N
             hybrids = results[1]
             image_painted, quiry, keys, hybrids = GroupQuiryRaw(image, keys, hybrids)
             results = methods['LineCls'][2](image, methods['LineCls'][0], quiry, methods['LineCls'][1], debug=False, cuda_id=1)
-            line_data = GroupLineRaw(image_painted, keys, hybrids, results)
+            line_data = GroupLineRaw(image_cls, keys, hybrids, results)
             return line_data
 
 def parse_args():
@@ -237,20 +244,28 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
+    # args.type = 'Pie'
+    # args.data_dir = "data/piedata(1008)"
+    # args.cache_path= "data/piedata(1008)/cache"
+    # args.save_path = 'save/pieout.json'
+    # args.image_path = 'data/piedata(1008)/pie/images/test2019'
     args.type = 'Bar'
     args.data_dir = "data/bardata(1031)"
     args.cache_path= "data/bardata(1031)/cache"
-    args.save_path = 'save'
+    args.save_path = 'save/barout_exp.json'
     args.image_path = 'data/bardata(1031)/bar/images/test2019'
+    
     methods = Pre_load_nets(args.type, 0, args.data_dir, args.cache_path)
     #target_dir = args.result_path
     tar_path = args.image_path
     save_path = args.save_path
     rs_dict = {}
     images = os.listdir(tar_path)
-    for image in tqdm(images):
+    from random import shuffle
+    shuffle(images)
+    for image in tqdm(images[:10]):
         path = os.path.join(tar_path, image)
-        data = test(path,methods=methods)
+        data = test(path,methods=methods,data_type=0)
         rs_dict[image] = data
     with open(save_path, "w") as f:
         json.dump(rs_dict, f)

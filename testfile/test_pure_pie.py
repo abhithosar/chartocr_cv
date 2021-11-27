@@ -7,7 +7,8 @@ import argparse
 
 import matplotlib
 matplotlib.use("Agg")
-
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import system_configs
 from nnet.py_factory import NetworkFactory
 from db.datasets import datasets
@@ -23,11 +24,11 @@ def parse_args():
     parser.add_argument("--split", dest="split",
                         help="which split to use",
                         default="validation", type=str)
-    parser.add_argument('--cache_path', dest="cache_path", type=str)
-    parser.add_argument('--result_path', dest="result_path", type=str)
+    parser.add_argument('--cache_path', dest="cache_path",default='data/piedata(1008)/cache', type=str)
+    parser.add_argument('--result_path', dest="result_path",default='save', type=str)
     parser.add_argument("--suffix", dest="suffix", default=None, type=str)
     parser.add_argument("--debug", action="store_true")
-    parser.add_argument("--data_dir", dest="data_dir", default="c:/work/piedata(1008)", type=str)
+    parser.add_argument("--data_dir", dest="data_dir", default="data/piedata(1008)", type=str)
 
     args = parser.parse_args()
     return args

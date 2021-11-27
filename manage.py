@@ -3,7 +3,8 @@
 import sys
 import os
 #os.environ["CUDA_VISIBLE_DEVICES"]="2,3"
-
+import torch
+torch.cuda.empty_cache()
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'server_match.settings')
     try:

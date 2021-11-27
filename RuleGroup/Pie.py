@@ -33,7 +33,7 @@ def drawArc(im, group, type):
 
 def get_point(points, threshold):
     count = 0
-    points_clean = []
+    points_clean = list()
     for point in points:
         if point['score'] > threshold:
             count += 1
@@ -217,7 +217,7 @@ def ekey(x):
     return x[0]
 
 def GroupPie(image, tls_raw, brs_raw):
-    centers = []
+    centers = list()
     for temp in tls_raw.values():
         for point in temp:
             bbox = [point[2], point[3], 6, 6]
@@ -225,7 +225,7 @@ def GroupPie(image, tls_raw, brs_raw):
             category_id = int(point[1])
             score = float(point[0])
             centers.append({'bbox': bbox, 'category_id': category_id, 'score': score})
-    keys = []
+    keys = list()
     for temp in brs_raw.values():
         for point in temp:
             bbox = [point[2], point[3], 6, 6]
@@ -246,8 +246,11 @@ def GroupPie(image, tls_raw, brs_raw):
             groups = pair_multi(centers, keys, r, threshold)
             for group in groups:
                 drawArc(image, group, 0)
+                image.show()
         data_rs = []
         for group in groups:
+            #In a group first index is center
+            #All other points are sector key points
             center_x = group[0][0]
             center_y = group[0][1]
             left_x = group[2][0]
@@ -258,6 +261,7 @@ def GroupPie(image, tls_raw, brs_raw):
             y1 = left_y - center_y
             x2 = right_x - center_x
             y2 = right_y - center_y
+            #Calculate the sector angle using pixel coordinates of the point group
             theta = math.degrees(math.acos(
                 max(min((x1 * x2 + y1 * y2) / math.sqrt(x1 * x1 + y1 * y1) / math.sqrt(x2 * x2 + y2 * y2), 1), -1)))
             cross = x1 * (y2) - x2 * (y1)
