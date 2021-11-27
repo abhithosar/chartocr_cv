@@ -27,10 +27,15 @@ def load_preds_gt_json(preds_json_loc, gt_json_loc):
     f_image_gt = dict()
     for key, group in bbox_list:
         image_name = [x['name'] for x in image_ids_in_anno if x['id'] == key]
+        f_image_gt[image_name[0]] = []
         for g in group:
+            f_image_gt[image_name[0]].append(g['bbox'])
             print(g)
-        f_image_gt[image_name] = [x['bbox'] for x in group]
+            #= [g['bbox'] for g in group]
         #[f_image_gt[image_name].append(item) for item in group]#group
+
+    #Make pairs of maximum overlapping rectangles
+    #Calculate according to formula
     i = 9
     #bboxes_annons = [x for x in preds_json["annotations"] if x.] 
 
