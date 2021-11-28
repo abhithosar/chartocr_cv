@@ -5,3 +5,4 @@ results/
 *.pyc
 *.o*
 data/
+.vscode/

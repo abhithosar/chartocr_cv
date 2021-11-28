@@ -1,8 +1,9 @@
 import argparse
 import json
+from re import U
 import numpy as np
 import os
-
+from scipy.spatial.distance import cdist
 from torch import gt
 
 def parse_args():
@@ -12,6 +13,17 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+def pairwise_custom_distance(p,g):
+    return min(1,(abs((p[0]-g[0])/g[2]) + abs((p[1]-g[1])/g[3])+abs((p[3]-g[3])/g[3])))
+
+def try_metric6a():
+    preds_json = json.load(open("/home/danny/Downloads/release_ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/annotations_JSON/vertical_bar/PMC2367691___1755-8166-1-1-1.json"))#preds_json_loc))
+    gt_json = json.load(open("/home/danny/Downloads/release_ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/annotations_JSON/vertical_bar/PMC2367691___1755-8166-1-1-1.json"))#gt_json_loc))
+    preds_out = get_dataseries(preds_json)['bars']
+    gt_out = get_dataseries(gt_json)['bars']
+    compare = lambda ds1, ds2: compare_bar(ds1, ds2)
+    ds_match_score = create_dist_mat(preds_out, gt_out, compare, 2)
+    idd = 9
 
 def load_preds_gt_json(preds_json_loc, gt_json_loc):
     preds_json = json.load(open(preds_json_loc))
@@ -38,10 +50,36 @@ def load_preds_gt_json(preds_json_loc, gt_json_loc):
         f_image_gt[image_name[0]] = []
         for g in group:
             f_image_gt[image_name[0]].append(g['bbox'])
-            print(g)
+            #print(g)
             #= [g['bbox'] for g in group]
         #[f_image_gt[image_name].append(item) for item in group]#group
 
+    scores = list()
+    for image_p in f_image_gt:
+        gt_bboxes = f_image_gt[image_p]
+        pred_bboxes = preds_json[image_p]
+
+        cost_matrix = cdist(pred_bboxes, gt_bboxes, metric=pairwise_custom_distance)
+        cost_matrix = np.asfarray(cost_matrix)
+        # compare = lambda ds1, ds2: compare_bar(ds1, ds2)
+       
+        # ds_match_score = create_dist_mat(pred_bboxes, gt_bboxes, compare, 2)
+        assign_mat = np.zeros((len(pred_bboxes),len(gt_bboxes)))
+        m_index = 0
+        min_indexes = np.argmin(cost_matrix,axis=1)
+        for i in range(cost_matrix.shape[0]):
+            assign_mat[i][min_indexes[i]] = 1
+        from scipy.optimize import linear_sum_assignment
+        lin_sum_row,lin_sum_col = linear_sum_assignment(cost_matrix)
+        cost  = cost_matrix[lin_sum_row,lin_sum_col].sum()
+        score = 1-(cost/max(cost_matrix.shape[0],cost_matrix.shape[1]))
+        scores.append(score)
+
+    avg = sum(scores)/len(scores)
+    print("Eval score: ",avg)
+    sdfsd = 0
+    '''
+    ---- CODE NOT TO DELETE -----
     image_pred_gt_map = dict()
     for image in f_image_gt:
         image_pred_gt_map[image] = []
@@ -67,10 +105,8 @@ def load_preds_gt_json(preds_json_loc, gt_json_loc):
             else:
                 match_tuple = (0,0,0,0)    
             image_pred_gt_map[image].append(match_tuple)
+    '''
 
-
-    #Make pairs of maximum overlapping rectangles
-    #Calculate according to formula
     i = 9
     #bboxes_annons = [x for x in preds_json["annotations"] if x.] 
 
@@ -78,6 +114,7 @@ def load_preds_gt_json(preds_json_loc, gt_json_loc):
 
 if __name__ == "__main__":
     args = parse_args()
+    #try_metric6a()
     load_preds_gt_json(args.preds_bar,args.gt_bar)
 
 
