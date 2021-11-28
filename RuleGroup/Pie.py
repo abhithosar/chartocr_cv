@@ -275,5 +275,5 @@ def GroupPie(image, tls_raw, brs_raw):
         data_pure = []
         for datum in data_rs:
             data_pure.append(datum[1])
-        return image, data_pure
+        return image, groups
 
