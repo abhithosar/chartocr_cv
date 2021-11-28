@@ -11,12 +11,14 @@ import os
 import argparse
 
 parser = argparse.ArgumentParser(description="Clean UBPMC")
-parser.add_argument("--path", help="Path to clean empty JSON", default="data/ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/annotations_JSON")
+parser.add_argument("--path", help="Path to clean empty JSON", default="data/ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/")
 
 args = parser.parse_args()
 print(args.path)
-full_path = os.path.join(args.path, "*", "*.json")
+full_path = os.path.join(args.path, "annotations_JSON", "*", "*.json")
 print(full_path)
+
+
 
 all_files = glob.glob(full_path)
 for file in all_files:
@@ -27,3 +29,7 @@ for file in all_files:
         if (not "task6" in data) or (data["task6"]==None):
             #print("None for File:", file)
             os.remove(file)
+            classname = os.path.basename(os.path.dirname(file))
+            image_file = os.path.join(args.path, "images", classname, os.path.splitext(os.path.basename(file))[0] + ".jpg")
+            os.remove(image_file)
+
