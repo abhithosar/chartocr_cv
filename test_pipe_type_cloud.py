@@ -244,16 +244,16 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-    # args.type = 'Pie'
-    # args.data_dir = "data/piedata(1008)"
-    # args.cache_path= "data/piedata(1008)/cache"
-    # args.save_path = 'save/pieout.json'
-    # args.image_path = 'data/piedata(1008)/pie/images/test2019'
-    args.type = 'Bar'
-    args.data_dir = "data/bardata(1031)"
-    args.cache_path= "data/bardata(1031)/cache"
-    args.save_path = 'save/barout_exp.json'
-    args.image_path = 'data/bardata(1031)/bar/images/test2019'
+    args.type = 'Pie'
+    args.data_dir = "data/piedata(1008)"
+    args.cache_path= "data/piedata(1008)/cache"
+    args.save_path = 'save/pieout.json'
+    args.image_path = 'data/piedata(1008)/pie/images/test2019'
+    # args.type = 'Bar'
+    # args.data_dir = "data/bardata(1031)"
+    # args.cache_path= "data/bardata(1031)/cache"
+    # args.save_path = 'save/barout_exp.json'
+    # args.image_path = 'data/bardata(1031)/bar/images/test2019'
     
     methods = Pre_load_nets(args.type, 0, args.data_dir, args.cache_path)
     #target_dir = args.result_path
@@ -265,7 +265,19 @@ if __name__ == "__main__":
     shuffle(images)
     for image in tqdm(images[:10]):
         path = os.path.join(tar_path, image)
-        data = test(path,methods=methods,data_type=0)
-        rs_dict[image] = data
+        chartype = 2
+        data = test(path,methods=methods,data_type=chartype)
+        final_out = []
+        if chartype == 2:
+            
+            for val in data:
+                sector_coords = []
+                for cords in val:
+                    if type(cords) != float:
+                        sector_coords.append(cords[0])
+                        sector_coords.append(cords[1])
+                final_out.append(sector_coords)
+            
+        rs_dict[image] = final_out
     with open(save_path, "w") as f:
         json.dump(rs_dict, f)
