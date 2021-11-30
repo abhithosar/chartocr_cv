@@ -31,7 +31,7 @@ def parse_args():
     parser.add_argument("--cfg_file", dest="cfg_file", help="config file", default="CornerNet", type=str)
     parser.add_argument("--iter", dest="start_iter", help="train at iteration i", default=0, type=int)
     parser.add_argument("--threads", dest="threads", default=1, type=int)
-    parser.add_argument('--cache_path', dest="cache_path", type=str)
+    parser.add_argument('--cache_path', dest="cache_path",default="./data/cache/", type=str)
     parser.add_argument("--data_dir", dest="data_dir", default="./data", type=str)
     args = parser.parse_args()
     return args
