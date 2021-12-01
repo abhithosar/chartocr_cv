@@ -27,8 +27,8 @@ def drawLine(im, x, y, w, h, type):
     draw = ImageDraw.Draw(im)
     xy_list = [(x, y), (x+w, y), (x+w, y+h), (x, y+h)]
     xy_list2 = [(x, y), (x, y+h)]
-    draw.line(xy_list, fill = type, width = 2)
-    draw.line(xy_list2, fill= type , width= 2)
+    #draw.line(xy_list, fill = type, width = 2)
+    #draw.line(xy_list2, fill= type , width= 2)
     del draw
 
 def drawData(im, x, y, w, h, datum):

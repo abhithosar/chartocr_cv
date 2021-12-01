@@ -110,8 +110,8 @@ def drawLine(im, x, y, w, h, type, tag):
     draw = ImageDraw.Draw(im)
     xy_list = [(x, y), (x+w, y), (x+w, y+h), (x, y+h)]
     xy_list2 = [(x, y), (x, y+h)]
-    draw.line(xy_list, fill = type, width = 2)
-    draw.line(xy_list2, fill= type , width= 2)
+    #draw.line(xy_list, fill = type, width = 2)
+    #draw.line(xy_list2, fill= type , width= 2)
     draw.text((int(x+w/2), int(y+h/2)), u'%.4f' %tag , fill=fillColor)
     del draw
 
@@ -179,7 +179,7 @@ def draw_group(line, im):
     xy_list = []
     for key in line:
         xy_list.append((key['bbox'][0], key['bbox'][1]))
-    draw.line(xy_list, fill=(0, 255, 0), width=2)
+    #draw.line(xy_list, fill=(0, 255, 0), width=2)
     del draw
 
 

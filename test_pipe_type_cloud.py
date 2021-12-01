@@ -244,16 +244,16 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-    args.type = 'Pie'
-    args.data_dir = "data/piedata(1008)"
-    args.cache_path= "data/piedata(1008)/cache"
-    args.save_path = 'save/pieout.json'
-    args.image_path = 'data/piedata(1008)/pie/images/test2019'
-    # args.type = 'Bar'
-    # args.data_dir = "data/bardata(1031)"
-    # args.cache_path= "data/bardata(1031)/cache"
-    # args.save_path = 'save/barout_exp.json'
-    # args.image_path = 'data/bardata(1031)/bar/images/test2019'
+    # args.type = 'Pie'
+    # args.data_dir = "data/piedata(1008)"
+    # args.cache_path= "data/piedata(1008)/cache"
+    # args.save_path = 'save/pieout.json'
+    # args.image_path = 'data/piedata(1008)/pie/images/test2019'
+    args.type = 'Line'
+    args.data_dir = "data/linedata(1028)"
+    args.cache_path= "data/linedata(1028)/cache"
+    args.save_path = 'save/line_exp_ubpmc.json'
+    args.image_path = 'data/ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/images/line'
     
     methods = Pre_load_nets(args.type, 0, args.data_dir, args.cache_path)
     #target_dir = args.result_path
@@ -263,9 +263,9 @@ if __name__ == "__main__":
     images = os.listdir(tar_path)
     from random import shuffle
     shuffle(images)
-    for image in tqdm(images[:10]):
+    for image in tqdm(images):
         path = os.path.join(tar_path, image)
-        chartype = 2
+        chartype = 1
         data = test(path,methods=methods,data_type=chartype)
         final_out = []
         if chartype == 2:
