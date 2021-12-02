@@ -209,7 +209,7 @@ def test(image_path, data_type=0, debug=False, suffix=None, min_value_official=N
             bar_data = GroupBarRaw(image_cls, tls, brs)
             return bar_data
         if data_type == 2:
-            print("Predicted as PieChart")
+            #print("Predicted as PieChart")
             results = methods['Pie'][2](image, methods['Pie'][0], methods['Pie'][1], debug=False)
             cens = results[0]
             keys = results[1]
@@ -217,7 +217,7 @@ def test(image_path, data_type=0, debug=False, suffix=None, min_value_official=N
             
             if pie_data is not None:
                 
-                pie_data[0].show()
+                #pie_data[0].show()
                 return pie_data[1]
             else:
                 return pie_data
@@ -247,7 +247,7 @@ if __name__ == "__main__":
     args.type = 'Pie'
     args.data_dir = "data/piedata(1008)"
     args.cache_path= "data/piedata(1008)/cache"
-    args.save_path = 'save/pieout.json'
+    args.save_path = 'save/pieout_1_dec.json'
     args.image_path = 'data/piedata(1008)/pie/images/test2019'
     # args.type = 'Bar'
     # args.data_dir = "data/bardata(1031)"
@@ -263,20 +263,20 @@ if __name__ == "__main__":
     images = os.listdir(tar_path)
     from random import shuffle
     shuffle(images)
-    for image in tqdm(images[:10]):
+    for image in tqdm(images):
         path = os.path.join(tar_path, image)
         chartype = 2
         data = test(path,methods=methods,data_type=chartype)
         final_out = []
         if chartype == 2:
-            
-            for val in data:
-                sector_coords = []
-                for cords in val:
-                    if type(cords) != float:
-                        sector_coords.append(cords[0])
-                        sector_coords.append(cords[1])
-                final_out.append(sector_coords)
+            if data != None:
+                for val in data:
+                    sector_coords = []
+                    for cords in val:
+                        if type(cords) != float:
+                            sector_coords.append(cords[0])
+                            sector_coords.append(cords[1])
+                    final_out.append(sector_coords)
             
         rs_dict[image] = final_out
     with open(save_path, "w") as f:

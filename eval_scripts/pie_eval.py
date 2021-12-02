@@ -61,7 +61,7 @@ def load_preds_gt_json(preds_json_loc, gt_json_loc):
                                 dp[i-1][j],
                                 (dp[i-1][j-1]) + (1 - abs((preds[i]-gt[j])/gt[j])))
     
-    
+        
 
 if __name__ == "__main__":
     args = parse_args()
