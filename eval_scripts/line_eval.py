@@ -9,7 +9,7 @@ from torch import gt
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Line_Eval")
-    parser.add_argument("--preds_bar", dest="preds_bar", help="predictions for bar", default="save/lineout_o.json", type=str)
+    parser.add_argument("--preds_bar", dest="preds_bar", help="predictions for bar", default="save/lineout_full.json", type=str)
     parser.add_argument("--gt_bar", dest="gt_bar", help="groundtruth for bar", default="data/linedata(1028)/line/annotations/instancesLine(1023)_test2019.json", type=str)
     
     args = parser.parse_args()
@@ -100,16 +100,16 @@ def get_dataseries(json_obj):
 
 
 def load_preds_gt_json(preds_json_loc, gt_json_loc):
-    preds_json = json.load(open("/home/danny/Downloads/release_ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/annotations_JSON/line/PMC5554038___materials-10-00657-g005.json"))#preds_json_loc))
-    gt_json = json.load(open("/home/danny/Downloads/release_ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/annotations_JSON/line/PMC5554038___materials-10-00657-g005.json"))#gt_json_loc))
+    #preds_json = json.load(open("/home/danny/Downloads/release_ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/annotations_JSON/line/PMC5554038___materials-10-00657-g005.json"))#preds_json_loc))
+    #gt_json = json.load(open("/home/danny/Downloads/release_ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/annotations_JSON/line/PMC5554038___materials-10-00657-g005.json"))#gt_json_loc))
     
     mm_or_preds = json.load(open(preds_json_loc))
     gt_or_preds = json.load(open(gt_json_loc))
 
 
 
-    pred_no_names = get_dataseries(preds_json)['lines']
-    gt_no_names = get_dataseries(gt_json)['lines']
+    #pred_no_names = get_dataseries(preds_json)['lines']
+    #gt_no_names = get_dataseries(gt_json)['lines']
     
     
    #gt_json = json.load(open(gt_json_loc))
@@ -140,8 +140,10 @@ def load_preds_gt_json(preds_json_loc, gt_json_loc):
             y_vals = line_pts[1::2]
             line_cords = []
             for x,y in zip(x_vals,y_vals):
-                line_cords.append({'x':x,'y':y})
-            f_image_gt[image_name[0]].append(line_cords)
+                if x != 0 and y != 0:
+                    line_cords.append({'x':x,'y':y})
+            if len(line_cords) > 0:
+                f_image_gt[image_name[0]].append(line_cords)
     
     scores = list()
     for image_p in f_image_gt:
@@ -149,6 +151,7 @@ def load_preds_gt_json(preds_json_loc, gt_json_loc):
         pred_bboxes = preds_transform[image_p]
         
         ds_match_score = compare_line(pred_bboxes, gt_bboxes)
+        print(ds_match_score)
         scores.append(ds_match_score)
     
     avg_score = sum(scores) / len(scores)
