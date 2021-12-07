@@ -8,8 +8,8 @@ from torch import gt
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Bar_Eval")
-    parser.add_argument("--preds_bar", dest="preds_bar", help="predictions for bar", default="save/barout_full.json", type=str)
-    parser.add_argument("--gt_bar", dest="gt_bar", help="groundtruth for bar", default="data/bardata(1031)/bar/annotations/instancesBar(1031)_test2019.json", type=str)
+    parser.add_argument("--preds_bar", dest="preds_bar", help="predictions for bar", default="../save/barout_full.json", type=str)
+    parser.add_argument("--gt_bar", dest="gt_bar", help="groundtruth for bar", default="../data/bardata(1031)/bar/annotations/instancesBar(1031)_test2019.json", type=str)
     args = parser.parse_args()
     return args
 
