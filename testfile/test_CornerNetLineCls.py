@@ -143,7 +143,7 @@ def kp_detection(image, db, quiry, nnet, debug=False, decode_func=kp_decode, cud
 
         tag_ind = 0
         b_ind = 0
-        print(len(detections))
+        #print(len(detections))
         for k in range(len(detections)):
             sp = detections[k, 0]
             ep = detections[k, 1]

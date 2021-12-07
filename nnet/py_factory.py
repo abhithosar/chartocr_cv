@@ -39,6 +39,9 @@ class NetworkFactory(object):
         nnet_module = importlib.import_module(module_file)
 
         self.model   = DummyModule(nnet_module.model(db))
+        #newmodel = self.model.cuda()
+        # from torchsummary import summary
+        # summary(newmodel,(3,511,511))
         self.loss    = nnet_module.loss
         self.network = Network(self.model, self.loss)
 
@@ -69,6 +72,8 @@ class NetworkFactory(object):
         self.cuda_id = cuda_id
 
     def train_mode(self):
+        # from torchsummary import summary
+        # summary(self.network,(1,511,511))
         self.network.train()
 
     def eval_mode(self):

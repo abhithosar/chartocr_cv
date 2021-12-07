@@ -89,6 +89,7 @@ def kp_detection(image, db, nnet, debug=False, decode_func=kp_decode, cuda_id=0)
             images = torch.from_numpy(images)
         dets_tl, dets_br, flag = decode_func(nnet, images, K, ae_threshold=ae_threshold, kernel=nms_kernel)
         offset = (offset + 1) * 100
+        del images
         _rescale_points(dets_tl, ratios, borders, sizes)
         _rescale_points(dets_br, ratios, borders, sizes)
         detections_point_tl.append(dets_tl)

@@ -72,7 +72,7 @@ class model(kp_pure_bar):
         out_dim = 1
 
         super(model, self).__init__(
-            n, 2, dims, modules, out_dim,
+            n, 1, dims, modules, out_dim,
             make_tl_layer=make_tl_layer,
             make_br_layer=make_br_layer,
             make_pool_layer=make_pool_layer,

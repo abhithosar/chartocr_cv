@@ -235,6 +235,7 @@ def GroupPie(image, tls_raw, brs_raw):
             keys.append({'bbox': bbox, 'category_id': category_id, 'score': score})
     centers = get_point(centers, 0.30)
     keys = get_point(keys, 0.30)
+    groups = []
     if len(centers) > 0:
         centers, keys = filter(centers, keys)
         if len(centers) == 1:
@@ -246,7 +247,7 @@ def GroupPie(image, tls_raw, brs_raw):
             groups = pair_multi(centers, keys, r, threshold)
             for group in groups:
                 drawArc(image, group, 0)
-                image.show()
+                #image.show()
         data_rs = []
         for group in groups:
             #In a group first index is center

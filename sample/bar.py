@@ -151,6 +151,12 @@ def kp_detection(db, k_ind, data_aug, debug):
             else:
                 tl_heatmaps[b_ind, category, ytl, xtl] = 1
                 br_heatmaps[b_ind, category, ybr, xbr] = 1
+            
+            heatmapshow = None
+            heatmap = cv2.resize(np.reshape(tl_heatmaps[0],(128,128)), (128,128))
+            heatmapshow = cv2.normalize(heatmap, heatmapshow, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+            heatmapshow = cv2.applyColorMap(heatmapshow, cv2.COLORMAP_JET)
+            cv2.imwrite("Heatmappppp.jpg", heatmapshow)
 
             tag_ind = tag_lens[b_ind]
             tl_regrs[b_ind, tag_ind, :] = [fxtl - xtl, fytl - ytl]

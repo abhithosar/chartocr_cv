@@ -61,6 +61,7 @@ def load_net(testiter, cfg_name, data_dir, cache_dir, cuda_id=0):
     print("loading parameters...")
     nnet.load_params(test_iter)
     if torch.cuda.is_available():
+        print(" \n\n\n#### cuda is available\n\n\n\n")
         nnet.cuda(cuda_id)
     nnet.eval_mode()
     return db, nnet
@@ -202,11 +203,12 @@ def test(image_path, data_type=0, debug=False, suffix=None, min_value_official=N
         # image_painted, cls_info = GroupCls(image_cls, tls, brs)
         # title2string, min_value, max_value = try_math(image_path, cls_info)
         if data_type == 0:
-            print("Predicted as BarChart")
+            #print("Predicted as BarChart")
             results = methods['Bar'][2](image, methods['Bar'][0], methods['Bar'][1], debug=False)
             tls = results[0]
             brs = results[1]
             bar_data = GroupBarRaw(image_cls, tls, brs)
+            torch.cuda.empty_cache()
             return bar_data
         if data_type == 2:
             #print("Predicted as PieChart")
@@ -223,12 +225,12 @@ def test(image_path, data_type=0, debug=False, suffix=None, min_value_official=N
                 return pie_data
 
         if data_type== 1:
-            print("Predicted as LineChart")
-            results = methods['Line'][2](image, methods['Line'][0], methods['Line'][1], debug=False, cuda_id=1)
+            #print("Predicted as LineChart")
+            results = methods['Line'][2](image, methods['Line'][0], methods['Line'][1], debug=False, cuda_id=0)
             keys = results[0]
             hybrids = results[1]
             image_painted, quiry, keys, hybrids = GroupQuiryRaw(image, keys, hybrids)
-            results = methods['LineCls'][2](image, methods['LineCls'][0], quiry, methods['LineCls'][1], debug=False, cuda_id=1)
+            results = methods['LineCls'][2](image, methods['LineCls'][0], quiry, methods['LineCls'][1], debug=False, cuda_id=0)
             line_data = GroupLineRaw(image_cls, keys, hybrids, results)
             return line_data
 
@@ -243,17 +245,29 @@ def parse_args():
     return args
 
 if __name__ == "__main__":
-    args = parse_args()
+    # args = parse_args()
     # args.type = 'Pie'
     # args.data_dir = "data/piedata(1008)"
     # args.cache_path= "data/piedata(1008)/cache"
     # args.save_path = 'save/pieout.json'
     # args.image_path = 'data/piedata(1008)/pie/images/test2019'
+    # args = parse_args()
+    # args.type = 'Bar'
+    # args.data_dir = "data/bardata(1031)"
+    # args.cache_path= "data/bardata(1031)/cache"
+    # args.save_path = 'save/barout.json'
+    # args.image_path = 'data/bardata(1031)/bar/images/test2019'
+    args = parse_args()
     args.type = 'Line'
     args.data_dir = "data/linedata(1028)"
     args.cache_path= "data/linedata(1028)/cache"
-    args.save_path = 'save/line_exp_ubpmc.json'
-    args.image_path = 'data/ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/images/line'
+    args.save_path = 'save/lineout.json'
+    args.image_path = 'data/linedata(1028)/line/images/test2019'
+    # args.type = 'Line'
+    # args.data_dir = "data/linedata(1028)"
+    # args.cache_path= "data/linedata(1028)/cache"
+    # args.save_path = 'save/line_exp_ubpmc.json'
+    # args.image_path = 'data/ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/images/line'
     
     methods = Pre_load_nets(args.type, 0, args.data_dir, args.cache_path)
     #target_dir = args.result_path
@@ -263,8 +277,25 @@ if __name__ == "__main__":
     images = os.listdir(tar_path)
     from random import shuffle
     shuffle(images)
+    count = 0
+    totalcount = len(images)
+    for image in images:
+        path = os.path.join(tar_path, image)
+        image2 = cv2.imread(path)
+        if(image2.shape[0] > 1000 and image2.shape[1] > 1000):
+            print(f"skipped image :: {path}\n shape :: {image2.shape[0]}, {image2.shape[1]}")
+            count  += 1
+    print(f"Higher Res images :: {count}")
+    print(f"Total images :: {totalcount}")
+    #exit() 
+
     for image in tqdm(images):
         path = os.path.join(tar_path, image)
+        imagel = cv2.imread(path)
+        if(imagel.shape[0] > 1000 and imagel.shape[1] > 1000):
+            print(f"skipped image :: {path}\n")
+            continue
+
         chartype = 1
         data = test(path,methods=methods,data_type=chartype)
         final_out = []
@@ -277,7 +308,8 @@ if __name__ == "__main__":
                             sector_coords.append(cords[0])
                             sector_coords.append(cords[1])
                     final_out.append(sector_coords)
-            
+        else:
+            final_out = data
         rs_dict[image] = final_out
     with open(save_path, "w") as f:
         json.dump(rs_dict, f)

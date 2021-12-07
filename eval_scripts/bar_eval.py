@@ -8,22 +8,13 @@ from torch import gt
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Bar_Eval")
-    parser.add_argument("--preds_bar", dest="preds_bar", help="predictions for bar", default="save/barout_exp.json", type=str)
+    parser.add_argument("--preds_bar", dest="preds_bar", help="predictions for bar", default="save/barout_full.json", type=str)
     parser.add_argument("--gt_bar", dest="gt_bar", help="groundtruth for bar", default="data/bardata(1031)/bar/annotations/instancesBar(1031)_test2019.json", type=str)
     args = parser.parse_args()
     return args
 
 def pairwise_custom_distance(p,g):
     return min(1,(abs((p[0]-g[0])/g[2]) + abs((p[1]-g[1])/g[3])+abs((p[3]-g[3])/g[3])))
-
-def try_metric6a():
-    preds_json = json.load(open("/home/danny/Downloads/release_ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/annotations_JSON/vertical_bar/PMC2367691___1755-8166-1-1-1.json"))#preds_json_loc))
-    gt_json = json.load(open("/home/danny/Downloads/release_ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/ICPR2020_CHARTINFO_UB_PMC_TRAIN_v1.21/annotations_JSON/vertical_bar/PMC2367691___1755-8166-1-1-1.json"))#gt_json_loc))
-    preds_out = get_dataseries(preds_json)['bars']
-    gt_out = get_dataseries(gt_json)['bars']
-    compare = lambda ds1, ds2: compare_bar(ds1, ds2)
-    ds_match_score = create_dist_mat(preds_out, gt_out, compare, 2)
-    idd = 9
 
 def load_preds_gt_json(preds_json_loc, gt_json_loc):
     preds_json = json.load(open(preds_json_loc))
@@ -50,7 +41,7 @@ def load_preds_gt_json(preds_json_loc, gt_json_loc):
         f_image_gt[image_name[0]] = []
         for g in group:
             f_image_gt[image_name[0]].append(g['bbox'])
-            #print(g)
+            print(g)
             #= [g['bbox'] for g in group]
         #[f_image_gt[image_name].append(item) for item in group]#group
 
@@ -58,12 +49,13 @@ def load_preds_gt_json(preds_json_loc, gt_json_loc):
     for image_p in f_image_gt:
         gt_bboxes = f_image_gt[image_p]
         pred_bboxes = preds_json[image_p]
-
+        
+        if len(pred_bboxes) == 0:
+            continue
+        
         cost_matrix = cdist(pred_bboxes, gt_bboxes, metric=pairwise_custom_distance)
         cost_matrix = np.asfarray(cost_matrix)
-        # compare = lambda ds1, ds2: compare_bar(ds1, ds2)
-       
-        # ds_match_score = create_dist_mat(pred_bboxes, gt_bboxes, compare, 2)
+
         assign_mat = np.zeros((len(pred_bboxes),len(gt_bboxes)))
         m_index = 0
         min_indexes = np.argmin(cost_matrix,axis=1)
@@ -73,6 +65,7 @@ def load_preds_gt_json(preds_json_loc, gt_json_loc):
         lin_sum_row,lin_sum_col = linear_sum_assignment(cost_matrix)
         cost  = cost_matrix[lin_sum_row,lin_sum_col].sum()
         score = 1-(cost/max(cost_matrix.shape[0],cost_matrix.shape[1]))
+        print(score)
         scores.append(score)
 
     avg = sum(scores)/len(scores)
@@ -80,6 +73,7 @@ def load_preds_gt_json(preds_json_loc, gt_json_loc):
     sdfsd = 0
     '''
     ---- CODE NOT TO DELETE -----
+    CODE CALCULATES IOU AND MOST OVERLAPPED BOX
     image_pred_gt_map = dict()
     for image in f_image_gt:
         image_pred_gt_map[image] = []

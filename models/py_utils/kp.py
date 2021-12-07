@@ -1590,6 +1590,7 @@ class kp_line(nn.Module):
 
             key_tag  = _tranpose_and_gather_feat(key_tag_ori, key_inds)
             key_regr = _tranpose_and_gather_feat(key_regr_ori, key_inds)
+            
             for g_id in range(16):
                 key_tag_grouped.append(torch.unsqueeze(_tranpose_and_gather_feat(key_tag_ori, key_inds_grouped[:, g_id,:]), 1))
             key_tag_grouped = torch.cat(key_tag_grouped, 1)
@@ -1685,7 +1686,7 @@ class kp_pure_dcn(nn.Module):
             make_cnv_layer(curr_dim, cnv_dim) for _ in range(nstack)
         ])
         self.dcns = nn.ModuleList([
-            dcn(4, cnv_dim, cnv_dim, 3, 3) for _ in range(nstack)
+            dcn_(4, cnv_dim, cnv_dim, 3, 3) for _ in range(nstack)
         ])
         self.tl_cnvs = nn.ModuleList([
             make_tl_layer(cnv_dim) for _ in range(nstack)

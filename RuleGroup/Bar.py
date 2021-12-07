@@ -269,6 +269,7 @@ def GroupBarRaw(image, tls_raw, brs_raw):
         drawLine(image, key['bbox'][0], key['bbox'][1], 3, 3, (0, int(255 * key['score']), 0))
     #image.save(tar_dir + id2name[id])
     info = {}
+    groups=[]
     if len(tls) > 0:
         for tar_id in range(1):
             tl_same = []
