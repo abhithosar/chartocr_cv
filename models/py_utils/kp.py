@@ -1073,6 +1073,7 @@ class kp_pure_bar(nn.Module):
 
             kp  = kp_(inter)
             cnv = cnv_(kp)
+           
             tl_cnv = tl_cnv_(cnv)
             br_cnv = br_cnv_(cnv)
 
@@ -1243,6 +1244,7 @@ class kp_pure_pie(nn.Module):
 
             kp  = kp_(inter)
             cnv = cnv_(kp)
+           
             center_cnv = center_cnv_(cnv)
             key_cnv = key_cnv_(cnv)
 
@@ -1556,12 +1558,12 @@ class kp_line(nn.Module):
         self.relu = nn.ReLU(inplace=True)
 
     def _train(self, *xs):
-        image   = xs[0]
-        key_inds = xs[1]
-        key_inds_grouped = xs[2]
+        image   = xs[0] #dim = 2,3,511,511
+        key_inds = xs[1]#dim = 2,256
+        key_inds_grouped = xs[2]#dim 2,16,128
         tag_group_lens = xs[3]
 
-        inter = self.pre(image)
+        inter = self.pre(image)#dim = 2,256,128,128
         outs  = []
         layers = zip(
             self.kps, self.cnvs,
@@ -1578,21 +1580,21 @@ class kp_line(nn.Module):
             key_tag_ = layer[6]
             key_regr_= layer[7]
 
-            kp  = kp_(inter)
-            cnv = cnv_(kp)
+            kp  = kp_(inter)#dim 2,256,128,128
+            cnv = cnv_(kp)#dim 2,256,128,128
 
-            key_cnv = key_cnv_(cnv)
-            hybrid_cnv = hybrid_cnv_(cnv)
+            key_cnv = key_cnv_(cnv)#2,256,128,128
+            hybrid_cnv = hybrid_cnv_(cnv)#2,256,128,128
 
-            key_heat, hybrid_heat = key_heat_(key_cnv), hybrid_heat_(hybrid_cnv)
-            key_tag_ori  = key_tag_(cnv)
-            key_regr_ori = key_regr_(key_cnv)
+            key_heat, hybrid_heat = key_heat_(key_cnv), hybrid_heat_(hybrid_cnv) #dim = 2,1,128,128  2,1,128,128
+            key_tag_ori  = key_tag_(cnv)#2,1,128,128
+            key_regr_ori = key_regr_(key_cnv)#2,2,128,128
 
-            key_tag  = _tranpose_and_gather_feat(key_tag_ori, key_inds)
-            key_regr = _tranpose_and_gather_feat(key_regr_ori, key_inds)
+            key_tag  = _tranpose_and_gather_feat(key_tag_ori, key_inds)#2,256,1
+            key_regr = _tranpose_and_gather_feat(key_regr_ori, key_inds)#2,256,2
             
             for g_id in range(16):
-                key_tag_grouped.append(torch.unsqueeze(_tranpose_and_gather_feat(key_tag_ori, key_inds_grouped[:, g_id,:]), 1))
+                key_tag_grouped.append(torch.unsqueeze(_tranpose_and_gather_feat(key_tag_ori, key_inds_grouped[:, g_id,:]), 1))#converts -> 2,128,1 -> 2,1,128,1
             key_tag_grouped = torch.cat(key_tag_grouped, 1)
             outs += [key_heat, hybrid_heat, key_tag, key_tag_grouped, key_regr]
 
@@ -1643,6 +1645,7 @@ class kp_line(nn.Module):
 
     def forward(self, *xs, **kwargs):
         if len(xs) > 1:
+            #xs len = 4 in line
             return self._train(*xs, **kwargs)
         return self._test(*xs, **kwargs)
 

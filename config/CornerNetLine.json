@@ -1,7 +1,7 @@
 {
     "system": {
         "dataset": "Line",
-        "batch_size": 26,
+        "batch_size": 2,
         "sampling_function": "kp_detection",
 
         "train_split": "trainchart",
@@ -11,7 +11,7 @@
         "learning_rate": 0.00025,
         "decay_rate": 10,
 
-        "val_iter": 100,
+        "val_iter": 1,
 
         "opt_algo": "adam",
         "prefetch_size": 5,

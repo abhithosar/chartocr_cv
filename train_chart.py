@@ -29,6 +29,7 @@ torch.backends.cudnn.benchmark = True
 def parse_args():
     parser = argparse.ArgumentParser(description="Train CornerNet")
     parser.add_argument("--cfg_file", dest="cfg_file", help="config file", default="CornerNetLine", type=str)
+    # parser.add_argument("--cfg_file", dest="cfg_file", help="config file", default="CornerNetPureBar", type=str)
     parser.add_argument("--iter", dest="start_iter", help="train at iteration i", default=0, type=int)
     parser.add_argument("--threads", dest="threads", default=1, type=int)
     parser.add_argument('--cache_path', dest="cache_path",default="./data/cache/", type=str)
@@ -160,7 +161,7 @@ def train(training_dbs, validation_db, start_iter=0):
         if display and iteration % display == 0:
             print("training loss at iteration {}: {}".format(iteration, training_loss.item()))
             run.log('train_loss', training_loss.item())
-
+        val_iter = 5
         if val_iter and validation_db.db_inds.size and iteration % val_iter == 0:
             nnet.eval_mode()
             validation, val_ind = sample_data(validation_db, val_ind, data_aug=False)

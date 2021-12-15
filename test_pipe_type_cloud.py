@@ -195,13 +195,14 @@ def test(image_path, data_type=0, debug=False, suffix=None, min_value_official=N
     image_cls = Image.open(image_path)
     image = cv2.imread(image_path)
     with torch.no_grad():
-        # results = methods['Bar'][2](image, methods['Bar'][0], methods['Bar'][1], debug=False)
-        # info = results[0]
-        # tls = results[1]
-        # brs = results[2]
-        # plot_area = []
-        # image_painted, cls_info = GroupCls(image_cls, tls, brs)
-        # title2string, min_value, max_value = try_math(image_path, cls_info)
+        #results = methods['Bar'][2](image, methods['Bar'][0], methods['Bar'][1], debug=False)
+        results = methods['Cls'][2](image, methods['Cls'][0], methods['Cls'][1], debug=False)
+        info = results[0]
+        tls = results[1]
+        brs = results[2]
+        plot_area = []
+        image_painted, cls_info = GroupCls(image_cls, tls, brs)
+        title2string, min_value, max_value = try_math(image_path, cls_info)
         if data_type == 0:
             #print("Predicted as BarChart")
             results = methods['Bar'][2](image, methods['Bar'][0], methods['Bar'][1], debug=False)
@@ -251,18 +252,18 @@ if __name__ == "__main__":
     # args.cache_path= "data/piedata(1008)/cache"
     # args.save_path = 'save/pieout.json'
     # args.image_path = 'data/piedata(1008)/pie/images/test2019'
-    # args = parse_args()
-    # args.type = 'Bar'
-    # args.data_dir = "data/bardata(1031)"
-    # args.cache_path= "data/bardata(1031)/cache"
-    # args.save_path = 'save/barout.json'
-    # args.image_path = 'data/bardata(1031)/bar/images/test2019'
     args = parse_args()
-    args.type = 'Line'
-    args.data_dir = "data/linedata(1028)"
-    args.cache_path= "data/linedata(1028)/cache"
-    args.save_path = 'save/lineout.json'
-    args.image_path = 'data/linedata(1028)/line/images/test2019'
+    args.type = 'Bar'
+    args.data_dir = "data/bardata(1031)"
+    args.cache_path= "data/bardata(1031)/cache"
+    args.save_path = 'save/barout.json'
+    args.image_path = 'data/bardata(1031)/bar/images/test2019'
+    # args = parse_args()
+    # args.type = 'Line'
+    # args.data_dir = "data/linedata(1028)"
+    # args.cache_path= "data/linedata(1028)/cache"
+    # args.save_path = 'save/lineout_test.json'
+    # args.image_path = 'data/linedata(1028)/line/images/test2019'
     # args.type = 'Line'
     # args.data_dir = "data/linedata(1028)"
     # args.cache_path= "data/linedata(1028)/cache"
