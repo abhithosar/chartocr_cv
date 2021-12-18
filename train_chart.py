@@ -28,7 +28,7 @@ torch.backends.cudnn.benchmark = True
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Train CornerNet")
-    parser.add_argument("--cfg_file", dest="cfg_file", help="config file", default="CornerNetLine", type=str)
+    parser.add_argument("--cfg_file", dest="cfg_file", help="config file", default="CornerNetLineClsReal", type=str)
     # parser.add_argument("--cfg_file", dest="cfg_file", help="config file", default="CornerNetPureBar", type=str)
     parser.add_argument("--iter", dest="start_iter", help="train at iteration i", default=0, type=int)
     parser.add_argument("--threads", dest="threads", default=1, type=int)

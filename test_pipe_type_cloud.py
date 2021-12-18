@@ -68,6 +68,12 @@ def load_net(testiter, cfg_name, data_dir, cache_dir, cuda_id=0):
 
 def Pre_load_nets(type, id_cuda, data_dir, cache_dir):
     methods = {}
+    db_cls, nnet_cls = load_net(50000, "CornerNetCls", "data/clsdata(1031)", "data/clsdata(1031)/cache",
+                                id_cuda)
+    path = 'testfile.test_%s' % "CornerNetCls"
+    testing_cls = importlib.import_module(path).testing
+    methods['Cls'] = [db_cls, nnet_cls, testing_cls]
+
     if type == "Bar":
         db_bar, nnet_bar = load_net(50000, "CornerNetPureBar", data_dir, cache_dir,
                                     id_cuda)
@@ -94,8 +100,8 @@ def Pre_load_nets(type, id_cuda, data_dir, cache_dir):
     return methods
 
 def ocr_result(image_path):
-    subscription_key = "ad143190288d40b79483aa0d5c532724"
-    vision_base_url = "https://westus2.api.cognitive.microsoft.com/vision/v2.0/"
+    subscription_key = "d50d96c29d12460ba656f7a39379457f"#"ad143190288d40b79483aa0d5c532724"
+    vision_base_url = "https://chartocr.cognitiveservices.azure.com/vision/v2.0/"
     ocr_url = vision_base_url + "read/core/asyncBatchAnalyze"
     headers = {'Ocp-Apim-Subscription-Key': subscription_key, 'Content-Type': 'application/octet-stream'}
     params = {'language': 'unk', 'detectOrientation': 'true'}
@@ -182,7 +188,7 @@ def try_math(image_path, cls_info):
         delta_min_max = max_value-min_value
         delta_mark = min_y - max_y
         delta_plot_y = y_min - y_max
-        delta = delta_min_max/delta_mark
+        delta = delta_min_max/delta_mark if not 0 else 1
         if abs(min_y-y_min)/delta_plot_y > 0.1:
             print(abs(min_y-y_min)/delta_plot_y)
             print("Predict the lower bar")
@@ -196,6 +202,8 @@ def test(image_path, data_type=0, debug=False, suffix=None, min_value_official=N
     image = cv2.imread(image_path)
     with torch.no_grad():
         #results = methods['Bar'][2](image, methods['Bar'][0], methods['Bar'][1], debug=False)
+        
+        #***  classification of chart is bypassed
         results = methods['Cls'][2](image, methods['Cls'][0], methods['Cls'][1], debug=False)
         info = results[0]
         tls = results[1]
@@ -300,6 +308,8 @@ if __name__ == "__main__":
         chartype = 1
         data = test(path,methods=methods,data_type=chartype)
         final_out = []
+        #if chartype == 1:
+            
         if chartype == 2:
             if data != None:
                 for val in data:
