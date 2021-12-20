@@ -122,8 +122,8 @@ class model(kp_line):
         out_dim = 1
 
         super(model, self).__init__(
-            #n, 2, dims, modules, out_dim,
-             n, 1, dims, modules, out_dim,
+            n, 2, dims, modules, out_dim,
+            #n, 1, dims, modules, out_dim,
             make_center_layer=make_ct_layer,
             make_pool_layer=make_pool_layer,
             make_hg_layer=make_hg_layer,

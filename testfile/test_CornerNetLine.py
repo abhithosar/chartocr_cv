@@ -93,7 +93,7 @@ def kp_detection(image, db, nnet, debug=False, decode_func=kp_decode, cuda_id=0)
 
         if torch.cuda.is_available():
             images = torch.from_numpy(images).cuda(cuda_id)
-        else:
+        else: 
             images = torch.from_numpy(images)
         dets_key, dets_hybrid, time_backbone, time_psn, flag = decode_func(nnet, images, K, ae_threshold=ae_threshold, kernel=nms_kernel)
         time_backbones += time_backbone

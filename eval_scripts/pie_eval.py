@@ -37,18 +37,18 @@ def load_preds_gt_json(preds_json_loc, gt_json_loc):
             f_image_gt[image_name[0]].append(g['bbox'])
     
 
-    n = m = 10
+  
+    avg_score = 0
     preds,gt = [],[]
     for image_p in f_image_gt: 
+        score = 0
         gt_bboxes = f_image_gt[image_p]
         pred_bboxes = mm_or_preds[image_p]
-        
-        
-
+        n = len(gt_bboxes)
+        m = len(pred_bboxes)      
         merge_preds = []
        # for pred in pred_bboxes:
-            
-        
+        dp =[n][m]      
         for i in range(n+1):
             for j in range(m+1):
                 if i==0 or j==0:
@@ -61,7 +61,7 @@ def load_preds_gt_json(preds_json_loc, gt_json_loc):
                                 dp[i-1][j],
                                 (dp[i-1][j-1]) + (1 - abs((preds[i]-gt[j])/gt[j])))
     
-        
+    return dp[]    
 
 if __name__ == "__main__":
     args = parse_args()
